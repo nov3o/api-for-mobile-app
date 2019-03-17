@@ -2,3 +2,5 @@ mobileapi/localsettings.py
 db.sqlite3
 mobileapi/__pycache__
 api/__pycache__
+api/migrations/__pycache__
+api/menus
