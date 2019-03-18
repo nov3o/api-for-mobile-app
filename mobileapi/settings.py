@@ -35,6 +35,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 	'api',
+	'cafeterias',
+	'schedules',
+	'categories',
+	'food'
 ]
 
 MIDDLEWARE = [

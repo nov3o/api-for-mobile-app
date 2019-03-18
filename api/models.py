@@ -1,5 +1,6 @@
 from django.db import models
 
+"""
 class Cafeteria(models.Model):
     name = models.TextField(max_length=30)
 
@@ -28,3 +29,4 @@ class FoodItem(models.Model):
 	proteins = models.DecimalField(max_digits=3, decimal_places=1)
 	category_id = models.PositiveIntegerField()
 	image = models.TextField(max_length=20)
+"""
