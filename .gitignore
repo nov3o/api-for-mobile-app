@@ -5,3 +5,4 @@ __pycache__
 api/menus
 deploy.py
 api/migrations
+static

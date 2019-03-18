@@ -2,15 +2,15 @@ import os
 import random
 import re
 import pprint
+import requests
 from decimal import Decimal
 from datetime import time
+from os.path import join
 
 from cafeterias.models import Cafeteria
 from schedules.models import Schedule
 from categories.models import Category
 from food.models import FoodItem, FoodProps
-
-FoodProps.objects.all()
 
 
 # Machine-learned neural network that defines macroelements proportions
@@ -59,6 +59,7 @@ def get_food():
 		all_menus.append(cats)
 
 	return all_menus
+
 
 def db_loader():
 	c1 = Cafeteria.objects.create(name="Ключ на старт!")
@@ -152,3 +153,45 @@ def db_loader():
 			else:
 				fpx = FoodProps.objects.get(name=props[1])
 				FoodItem.objects.create(cat=cat_obj, props=fpx)
+
+
+def image_url(query):
+	print(query)
+	r = requests.get("https://api.qwant.com/api/search/images",
+	    params={
+	        'count': 1,
+	        'q': query,
+	        't': 'images',
+	        'uiv': 4
+	    },
+	    headers={
+	        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36'
+	    }
+	)
+
+	response = r.json().get('data').get('result').get('items')
+
+	if not response:
+		print(query)
+		return 0
+	return response[0].get('media')
+
+
+# Searches and downloads images of food
+# This function is unstable, because during requests may errors occur
+# and you need to restart function
+def image_downloader():
+	start_pk = 0
+	path = "/home/bunt/Desktop/djangoproject/mobileapi/static/"
+	for meal in FoodProps.objects.all()[start_pk:]:
+		url = image_url(meal.name)
+		if not url:
+			continue
+		# Leave only filename with extension
+		filename = url.split('/')[-1].split('?')[0]
+		ext = filename.split('.')[1]
+		img_data = requests.get(url).content
+		meal.image = str(meal.pk) + '.' + ext
+		meal.save()
+		with open(path + meal.image, 'wb') as handler:
+		    handler.write(img_data)
