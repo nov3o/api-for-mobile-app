@@ -1,7 +1,6 @@
 import os
 import random
 import re
-import pprint
 import requests
 from decimal import Decimal
 from datetime import time

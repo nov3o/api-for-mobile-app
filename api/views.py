@@ -1,28 +1,8 @@
-from django.http import HttpResponse
+from rest_framework import viewsets
 
-json_data = """
-{
-	"cafeteria1": {
-		"time": "10:00-21:00",
-		"menu": {
-			"category1": {
-				"foodname1": {
-					"price": 100,
-					"carbo": 3,
-					"proteins": 1,
-					"fat": 5
-				},
-				"jeoulieoune": {
-					"price": 123,
-					"carbo": 51,
-					"proteins": 48,
-					"fat": 1
-				}
-			}
-		}
-	}
-}
-"""
+from cafeterias.models import Cafeteria
+from api.serializers import CafeteriaSerializer
 
-def index(request):
-    return HttpResponse(json_data)
+class CafeView(viewsets.ModelViewSet):
+	queryset = Cafeteria.objects.all()
+	serializer_class = CafeteriaSerializer
