@@ -1,7 +1,12 @@
 import os
-import pprint
-import re
 import random
+import re
+import pprint
+from decimal import Decimal
+from datetime import time
+
+from api.models import Cafeteria, Schedule, FoodItem, Category
+
 
 # Machine-learned neural network that defines macroelements proportions
 def macros():
@@ -47,3 +52,75 @@ def get_food():
 		all_menus.append(cats)
 
 	return all_menus
+
+def db_loader():
+	Cafeteria.objects.create(name="Ключ на старт!")
+	Cafeteria.objects.create(name="Бауманская столовка")
+	Cafeteria.objects.create(name="ИмпВысТех Столовка")
+
+	all_schedules = get_food()
+
+	times = [
+	    (time(9,0), time(20,0)),
+	    (time(9,30), time(19,30)),
+	    (time(8,0), time(20,30))
+	    ]
+
+	for day in range(5):
+	    for cafei in range(3):
+	        sch = Schedule.objects.create(
+	            week_day=day, cafeteria_id=cafei, open_time=times[cafei][0],
+	            close_time=times[cafei][1]
+	            )
+	        day_menu = all_schedules[(day + cafei*2) % 6]
+	        for cat in list(day_menu.keys()):
+	            cat_obj = Category.objects.create(name=cat, schedule_id=sch.id)
+	            for props in day_menu[cat]:
+	                FoodItem.objects.create(
+					    weight		=props[0],
+	                    name		=props[1],
+		                price		=Decimal(float(props[2])),
+		                cal			=props[3],
+					    fat			=Decimal(float(props[4])),
+					    carbohydrats=Decimal(float(props[5])),
+		                proteins	=Decimal(float(props[6])),
+					    category_id	=cat_obj.id
+	                    )
+
+	sch = Schedule.objects.create(
+	    week_day=5 , cafeteria_id=0, open_time=time(10, 0),
+	    close_time=time(16, 0)
+	    )
+	day_menu = all_schedules[5]
+	for cat in list(day_menu.keys()):
+	    cat_obj = Category.objects.create(name=cat, schedule_id=sch.id)
+	    for props in day_menu[cat]:
+	        FoodItem.objects.create(
+			    weight		=props[0],
+				name		=props[1],
+				price		=Decimal(float(props[2])),
+				cal			=props[3],
+				fat			=Decimal(float(props[4])),
+				carbohydrats=Decimal(float(props[5])),
+				proteins	=Decimal(float(props[6])),
+				category_id	=cat_obj.id
+				)
+
+	sch = Schedule.objects.create(
+	    week_day=5, cafeteria_id=1, open_time=time(9, 30),
+	    close_time=time(19, 30)
+	    )
+	day_menu = all_schedules[1]
+	for cat in list(day_menu.keys()):
+	    cat_obj = Category.objects.create(name=cat, schedule_id=sch.id)
+	    for props in day_menu[cat]:
+	        FoodItem.objects.create(
+			    weight		=props[0],
+				name		=props[1],
+				price		=Decimal(float(props[2])),
+				cal			=props[3],
+				fat			=Decimal(float(props[4])),
+				carbohydrats=Decimal(float(props[5])),
+				proteins	=Decimal(float(props[6])),
+				category_id	=cat_obj.id
+				)
