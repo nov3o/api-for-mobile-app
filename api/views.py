@@ -4,44 +4,12 @@ from datetime import datetime
 
 from cafeterias.models import Cafeteria
 from schedules.models import Schedule
-from api.serializers import (CafeteriaSerializer,
-	MenuSerializer, ScheduleSerializer)
 
-
-class CafeView(generics.ListAPIView):
-	serializer_class = CafeteriaSerializer
-	queryset = Cafeteria.objects.all()
-
-
-class DaySchedule(generics.ListAPIView):
-	serializer_class = ScheduleSerializer
-
-	def get_queryset(self):
-		cid = self.kwargs['cafe_id']
-		wd = datetime.today().weekday()
-		return Schedule.objects.filter(Q(week_day=wd)).filter(Q(cafe_id=cid))
-
-
-class TodaySchedule(generics.ListAPIView):
-	serializer_class = ScheduleSerializer
-	queryset = Schedule.objects.all()
-
-
-class OneDaySchedule(generics.ListAPIView):
-	serializer_class = ScheduleSerializer
-
-	def get_queryset(self):
-		wd = self.kwargs['wd']
-		cid = self.kwargs['cafe_id']
-		return Schedule.objects.filter(Q(week_day=wd), Q(cafe_id=cid))
-
-
-class AllCafes(generics.ListAPIView):
-	serializer_class = ScheduleSerializer
-
-	def get_queryset(self):
-		wd = self.kwargs['wd']
-		return Schedule.objects.filter(Q(week_day=wd))
+from api.serializers import MenuSerializer
+from food.serializers import FoodItemSerializer
+from schedules.serializers import ScheduleSerializer
+from categories.serializers import CategorySerializer
+from cafeterias.serializers import CafeteriaSerializer
 
 
 class TodayMenu(generics.ListAPIView):
@@ -61,10 +29,7 @@ class TodayMenu(generics.ListAPIView):
 
 
 class OneDayMenu(generics.ListAPIView):
-	serializer_class = MenuSerializer(context={
-		'date': datetime.today().weekday(),
-		'time': None
-		})
+	serializer_class = MenuSerializer
 
 	def get_queryset(self):
 		return Schedule.objects.filter(
@@ -75,5 +40,5 @@ class OneDayMenu(generics.ListAPIView):
 	def get_serializer_context(self):
 		return {
 			'date': datetime.today().weekday(),
-			'time': datetime.time(datetime.now())
+			'time': None
 			}
